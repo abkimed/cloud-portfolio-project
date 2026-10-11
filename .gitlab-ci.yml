@@ -1,0 +1,11 @@
+stages:
+  - test
+
+smoke-test:
+  stage: test
+  image: python:3.11-slim
+  script:
+    - echo "Runner is working"
+    - python --version
+    - uname -m
+    - ls -la
