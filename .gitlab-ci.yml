@@ -1,11 +1,18 @@
 stages:
-  - test
+  - check
 
-smoke-test:
-  stage: test
+default:
   image: python:3.11-slim
+
+lint:
+  stage: check
   script:
-    - echo "Runner is working"
-    - python --version
-    - uname -m
-    - ls -la
+    - pip install ruff
+    - ruff check src/
+
+test:
+  stage: check
+  script:
+    - pip install -r src/app/requirements.txt -r src/app/requirements-dev.txt
+    - cd src/app
+    - pytest -v
