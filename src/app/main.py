@@ -1,6 +1,6 @@
 import os
-from fastapi import FastAPI, HTTPException
 import psycopg2
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI(title="Portfolio Microservice", version="1.0.0")
 
@@ -36,5 +36,5 @@ def db_check():
         cursor.close()
         conn.close()
         return {"status": "connected", "database_version": db_version[0]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database connection failed: {e!s}")
