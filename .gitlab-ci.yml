@@ -1,5 +1,6 @@
 stages:
   - check
+  - build
 
 default:
   image: python:3.11-slim
@@ -16,3 +17,19 @@ test:
     - pip install -r src/app/requirements.txt -r src/app/requirements-dev.txt
     - cd src/app
     - pytest -v
+
+build-image:
+  stage: build
+  image: docker:27.5.1
+  services:
+    - docker:27.5.1-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: "1"
+    DOCKER_CERT_PATH: "/certs/client"
+  script:
+    - docker info
+    - docker build -t cloud-portfolio-app:$CI_COMMIT_SHORT_SHA src/app
+    - docker image ls cloud-portfolio-app
+    
