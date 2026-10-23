@@ -22,14 +22,16 @@ build-image:
   stage: build
   image: docker:27.5.1
   services:
-    - docker:27.5.1-dind
+    - name: docker:27.5.1-dind
+      command: ["--insecure-registry=gitlab-24.orb.local:5050"]
   variables:
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_TLS_VERIFY: "1"
     DOCKER_CERT_PATH: "/certs/client"
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   script:
     - docker info
-    - docker build -t cloud-portfolio-app:$CI_COMMIT_SHORT_SHA src/app
-    - docker image ls cloud-portfolio-app
-    
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker build -t "$IMAGE_TAG" src/app
+    - docker push "$IMAGE_TAG"
